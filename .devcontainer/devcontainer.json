@@ -1,0 +1,30 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.238.0/containers/ubuntu
+{
+    "name": "development-environment",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    // Override default workspace folder name in the container to enable mounting pipeline workspace when run in the CI/CD environment
+    "workspaceFolder": "/development-environment",
+    "workspaceMount": "type=bind,source=${localWorkspaceFolder},target=/development-environment",
+    "containerEnv": {
+        "DISPLAY": "${localEnv:DISPLAY}",
+        "HOSTUSER": "${localEnv:USER}"
+    },
+    "remoteUser": "vscode",
+    "runArgs": [
+        "--network=host"
+    ],
+    "mounts": [
+        // Make bash history persistent (by mapping the local history to the container's remote user's).
+        "type=bind,source=${localEnv:HOME}/.bash_history,target=/home/vscode/.bash_history",
+        // Make SSH keys available to the vscode user
+        "type=bind,source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh",
+        // Make local home folder available in the container under its original path (and not as the remote
+        // user's home folder).
+        // This can be useful for example to enable git worktrees in the container (as the paths to the
+        // worktree master are set as absolute paths).
+        "type=bind,source=${localEnv:HOME}/,target=${localEnv:HOME}/"
+    ]
+}
